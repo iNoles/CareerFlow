@@ -29,7 +29,7 @@ CareerFlow uses **Gemini 1.5 Flash**, a state-of-the-art language model from Goo
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/yourusername/careerflow.git
+    git clone https://github.com/iNoles/CareerFlow.git
     ```
 
 2. **Install dependencies**:
