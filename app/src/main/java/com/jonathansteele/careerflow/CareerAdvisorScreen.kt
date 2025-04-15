@@ -34,50 +34,72 @@ import com.jonathansteele.careerflow.ui.theme.CareerFlowTheme
 fun CareerAdvisorScreen(modifier: Modifier = Modifier, viewModel: CareerFlowViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     var prompt by rememberSaveable { mutableStateOf("") }
-    val predefinedInterests = listOf(
-        "Problem Solving", "Helping People", "Math", "Creative Writing", "Coding", "Biology"
-    )
+    val predefinedInterests = listOf("Problem Solving", "Helping People", "Math", "Creative Writing", "Coding", "Biology")
 
-    // Apply the modifier here
-    Column(modifier = modifier.fillMaxSize()) {
-        TextField(
-            value = prompt,
-            onValueChange = { prompt = it },
-            label = { Text("Enter your interests/skills") },
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
-        )
-
-        InterestChipsWrap(
-            interests = predefinedInterests,
-            selectedInterest = prompt,
-            onInterestSelected = { prompt = it }
-        )
-
-        Button(
-            onClick = { viewModel.getCareerAdvice(prompt) },
-            enabled = prompt.isNotEmpty(),
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text("Get Career Advice")
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        item {
+            TextField(
+                value = prompt,
+                onValueChange = { prompt = it },
+                label = { Text("Enter your interests/skills") },
+                modifier = Modifier.fillMaxWidth()
+            )
         }
 
-        // Handle results display
-        if (uiState is UiState.Loading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (uiState is UiState.Success) {
-            val result = (uiState as UiState.Success).outputText
-            CareerAdviceTimeline(result = result)
-        } else if (uiState is UiState.Error) {
-            Text(
-                text = (uiState as UiState.Error).errorMessage,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(16.dp)
+        item {
+            InterestChipsWrap(
+                interests = predefinedInterests,
+                selectedInterest = prompt,
+                onInterestSelected = { prompt = it }
             )
+        }
+
+        item {
+            Button(
+                onClick = { viewModel.getCareerAdvice(prompt) },
+                enabled = prompt.isNotEmpty(),
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text("Get Career Advice")
+            }
+        }
+
+        when (uiState) {
+            is UiState.Loading -> item {
+                Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+
+            is UiState.Success -> {
+                val result = (uiState as UiState.Success).outputText
+                val milestones = result.split("\n").filter { it.isNotBlank() }
+
+                items(milestones) { milestone ->
+                    Card(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(text = milestone, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
+            }
+
+            is UiState.Error -> item {
+                Text(
+                    text = (uiState as UiState.Error).errorMessage,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+
+            else -> {}
         }
     }
 }
@@ -101,24 +123,6 @@ fun InterestChipsWrap(
                 label = { Text(interest) },
                 modifier = Modifier.padding(4.dp) // spacing between chips
             )
-        }
-    }
-}
-
-@Composable
-fun CareerAdviceTimeline(result: String) {
-    val milestones = result.split("\n")  // assuming the AI returns a step-by-step list of career advice
-
-    LazyColumn(modifier = Modifier.padding(16.dp)) {
-        items(milestones) { milestone ->
-            Card(
-                modifier = Modifier.padding(vertical = 8.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = milestone, style = MaterialTheme.typography.bodyLarge)
-                }
-            }
         }
     }
 }
