@@ -44,6 +44,11 @@ CareerFlow uses **Gemini 1.5 Flash**, a state-of-the-art language model from Goo
 
 4. **Run the app**:
     - Build and run the app on your Android device or emulator.
+  
+## 📸 Screenshots
+
+![Initial](images/inital.png)
+![Prompt Results](images/prompt.png)
 
 ### Sample Usage
 
@@ -57,7 +62,6 @@ CareerFlow uses **Gemini 1.5 Flash**, a state-of-the-art language model from Goo
 - **Kotlin**: Modern, expressive programming language for Android development.
 - **Jetpack Compose**: The UI toolkit used for building a native Android UI.
 - **Google Gemini API**: AI-powered career advice via `gemini-1.5-flash` model.
-- **Room Database**: (Future plans) Local data storage for saving user inputs and advice.
 
 ## 📦 Planned Features
 
